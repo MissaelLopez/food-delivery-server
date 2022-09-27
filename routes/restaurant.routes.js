@@ -6,8 +6,24 @@ const methods = require("../methods");
 
 // Get users
 router.get("/", methods.ensureToken, async (req, res) => {
-  const restaurants = await Restaurant.find();
-  res.status(200).json(restaurants);
+  try {
+    const restaurants = await Restaurant.find();
+    res.status(200).json(restaurants);
+  } catch (error) {
+    res.status(500).send({ msg: error.message });
+  }
+});
+
+// Get a restaurant
+router.get("/:id", methods.ensureToken, async (req, res) => {
+  try {
+    const restaurant = await Restaurant.findById(req.params.id).populate(
+      "foods"
+    );
+    res.status(200).json(restaurant);
+  } catch (error) {
+    res.status(500).send({ msg: error.message });
+  }
 });
 
 // Create a new restaurant
@@ -42,12 +58,14 @@ router.post("/", async (req, res) => {
       verified: req.body.verified,
     };
 
-    await new Restaurant(restaurantObj).save();
+    const restaurant = await new Restaurant(restaurantObj).save();
+    console.log(restaurant._id);
     await new User({
       email: req.body.email,
       password: hashPassword,
       type: "restaurant",
       verified: req.body.verified,
+      user: restaurant._id,
     }).save();
 
     res.status(201).send({ msg: "Restaurant created successfully" });

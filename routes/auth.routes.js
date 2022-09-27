@@ -25,14 +25,20 @@ router.post("/", async (req, res) => {
     }
 
     if (!user.verified) {
-      return res.status(401).send({ msg: "El usuario aún no ha sido verificado" });
+      return res
+        .status(401)
+        .send({ msg: "El usuario aún no ha sido verificado" });
     }
 
     const token = user.generateAuthToken(user.id);
 
-    res
-      .status(200)
-      .send({ token, user: user.id, type: user.type, msg: "Logged in successfully" });
+    res.status(200).send({
+      token,
+      userId: user.id,
+      user: user.user,
+      type: user.type,
+      msg: "Logged in successfully",
+    });
   } catch (error) {
     res.status(500).send({ msg: "Internal server error" });
   }
