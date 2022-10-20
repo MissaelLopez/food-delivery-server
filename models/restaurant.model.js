@@ -38,7 +38,7 @@ const validate = (data) => {
     status: joi.string().required().label("status"),
     lat: joi.string().required().label("lat"),
     lng: joi.string().required().label("lng"),
-    verified: joi.string().required().label("verified"),
+    verified: joi.boolean().required().label("verified"),
     password: passwordComplexity().required().label("Password"),
   });
   return schema.validate(data);
